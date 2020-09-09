@@ -1,16 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Task, TaskStatus } from './task.model';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { FilterTasksDto } from './dto/filter-tasks.dto';
 
 @Controller('tasks')
 export class TasksController {
-    constructor(private tasksService: TasksService) {
-    }
+    constructor(private tasksService: TasksService) {}
 
     @Get()
-    public getAllTasks(): Task[] {
-        return this.tasksService.getAllTasks();
+    public getTasks(@Query() filterDto: FilterTasksDto): Task[] {
+        return this.tasksService.getTasks(filterDto);
     }
 
     @Get('/:id')
