@@ -1,6 +1,6 @@
 import { TaskStatus } from '../task.model';
 
-export interface FilterTasksDto {
+export class FilterTasksDto {
     status: TaskStatus;
     search: string;
 }
