@@ -8,11 +8,21 @@ import { FilterTasksDto } from './dto/filter-tasks.dto';
 export class TasksService {
     private tasks = [];
 
-    public getTasks({ search, status }: FilterTasksDto): Task[] {
-        return this.tasks.filter(task => (
-            !status || task.status === status) && (new RegExp(search).test(task.description) || !search
-            )
-        );
+    public getTasks(filterTaskDto: FilterTasksDto): Task[] {
+        if (Object.keys(filterTaskDto).length) {
+            const { search, status }: FilterTasksDto = filterTaskDto;
+
+            return this.tasks.filter(task => (
+                !status || task.status === status) && (new RegExp(search).test(task.description) || !search
+                )
+            );
+        } else {
+            return this.getAllTasks();
+        }
+    }
+
+    private getAllTasks(): Task[] {
+        return this.tasks;
     }
 
     public getTaskById(id: string): Task {
