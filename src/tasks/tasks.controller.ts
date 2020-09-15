@@ -26,13 +26,13 @@ export class TasksController {
         return this.tasksService.createTask(createTaskDto);
     }
 
-    // @Patch('/:id/')
-    // public async patchTask(@Param('id') id: string, @Body('status', TaskStatusValidationPipe) status: TaskStatus): Promise<Task> {
-    //     return this.tasksService.patchTask(id, status);
-    // }
-    //
-    // @Delete('/:id')
-    // public async deleteTask(@Param('id') id: string): Promise<void> {
-    //     return this.tasksService.deleteTask(id);
-    // }
+    @Patch('/:id/')
+    public async patchTask(@Param('id') id: string, @Body('status', TaskStatusValidationPipe) status: TaskStatus): Promise<Task> {
+        return this.tasksService.patchTask(id, status);
+    }
+
+    @Delete('/:id')
+    public async deleteTask(@Param('id') id: string): Promise<void> {
+        return this.tasksService.deleteTask(id);
+    }
 }
