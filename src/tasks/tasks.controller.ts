@@ -9,11 +9,11 @@ import { Task } from './task.entity';
 @Controller('tasks')
 export class TasksController {
     constructor(private tasksService: TasksService) {}
-    //
-    // @Get()
-    // public async getTasks(@Query(ValidationPipe) filterDto: FilterTasksDto): Promise<Task[]> {
-    //     return this.tasksService.getTasks(filterDto);
-    // }
+
+    @Get()
+    public async getTasks(@Query(ValidationPipe) filterDto: FilterTasksDto): Promise<Task[]> {
+        return this.tasksService.getTasks(filterDto);
+    }
 
     @Get('/:id')
     public async getTaskById(@Param('id') id: string): Promise<Task> {
