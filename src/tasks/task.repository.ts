@@ -4,11 +4,17 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskStatus } from './task.status';
 import { FilterTasksDto } from './dto/filter-tasks.dto';
 import { User } from '../auth/user.entity';
+import { GetUser } from '../auth/get-user.decorator';
 
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
-    public async getTasks({ search, status }: FilterTasksDto): Promise<Task[]> {
+    public async getTasks(
+        { search, status }: FilterTasksDto,
+        user: User,
+    ): Promise<Task[]> {
         const query = this.createQueryBuilder('task');
+
+        query.where('task.userId = :userId', { userId: user.id });
 
         if (status) {
             query.andWhere('task.status = :status', { status });
