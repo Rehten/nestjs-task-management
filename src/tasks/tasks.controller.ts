@@ -24,7 +24,8 @@ import { User } from '../auth/user.entity';
 @Controller('tasks')
 @UseGuards(AuthGuard())
 export class TasksController {
-    constructor(private tasksService: TasksService) {}
+    constructor(private tasksService: TasksService) {
+    }
 
     @Get()
     public async getTasks(
@@ -35,8 +36,11 @@ export class TasksController {
     }
 
     @Get('/:id')
-    public async getTaskById(@Param('id') id: string): Promise<Task> {
-        return this.tasksService.getTaskById(id);
+    public async getTaskById(
+        @Param('id') id: string,
+        @GetUser() user: User,
+    ): Promise<Task> {
+        return this.tasksService.getTaskById(id, user);
     }
 
     @Post()
@@ -49,12 +53,19 @@ export class TasksController {
     }
 
     @Patch('/:id/')
-    public async patchTask(@Param('id') id: string, @Body('status', TaskStatusValidationPipe) status: TaskStatus): Promise<Task> {
-        return this.tasksService.patchTask(id, status);
+    public async patchTask(
+        @Param('id') id: string,
+        @Body('status', TaskStatusValidationPipe) status: TaskStatus,
+        @GetUser() user: User,
+    ): Promise<Task> {
+        return this.tasksService.patchTask(id, status, user);
     }
 
     @Delete('/:id')
-    public async deleteTask(@Param('id') id: string): Promise<void> {
-        return this.tasksService.deleteTask(id);
+    public async deleteTask(
+        @Param('id') id: string,
+        @GetUser() user: User,
+    ): Promise<void> {
+        return this.tasksService.deleteTask(id, user);
     }
 }
