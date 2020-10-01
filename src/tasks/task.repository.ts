@@ -4,14 +4,17 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskStatus } from './task.status';
 import { FilterTasksDto } from './dto/filter-tasks.dto';
 import { User } from '../auth/user.entity';
-import { GetUser } from '../auth/get-user.decorator';
+import { InternalServerErrorException, Logger } from '@nestjs/common';
 
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
+    private logger = new Logger();
+
     public async getTasks(
-        { search, status }: FilterTasksDto,
+        filterTasksDto: FilterTasksDto,
         user: User,
     ): Promise<Task[]> {
+        const { search, status }: FilterTasksDto = filterTasksDto;
         const query = this.createQueryBuilder('task');
 
         query.where('task.userId = :userId', { userId: user.id });
@@ -24,15 +27,21 @@ export class TaskRepository extends Repository<Task> {
             query.andWhere('(task.title LIKE :search OR task.description LIKE :search)', { search });
         }
 
-        const tasks: Task[] = await query.getMany();
+        try {
+            const tasks: Task[] = await query.getMany();
 
-        return tasks;
+            return tasks;
+        } catch (error) {
+            this.logger.error(`Failed to get tasks for user "${user.username}", DTO: ${JSON.stringify(filterTasksDto)}`, error.stack);
+            throw new InternalServerErrorException()
+        }
     }
 
     public async createTask(
-        { title, description }: CreateTaskDto,
+        createTaskDto: CreateTaskDto,
         user: User,
     ): Promise<Task> {
+        const { title, description }: CreateTaskDto = createTaskDto;
         const task: Task = new Task();
 
         task.title = title;
@@ -40,7 +49,12 @@ export class TaskRepository extends Repository<Task> {
         task.status = TaskStatus.OPEN;
         task.user = user;
 
-        await task.save();
+        try {
+            await task.save();
+        } catch (error) {
+            this.logger.error(`Failed to create a task for user "${user.username}", DTO: ${createTaskDto}`, error.stack);
+            throw new InternalServerErrorException();
+        }
 
         delete task.user;
 
